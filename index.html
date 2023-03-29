@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Sunrise Time Clock for St. Andrews, Scotland</title>
+</head>
+<body>
+	<h1>Sunrise Time Clock for St. Andrews, Scotland</h1>
+	<p>The current time in St. Andrews is: <span id="currentTime"></span></p>
+
+	<script>
+		// Fetch the sunrise time for St. Andrews, Scotland
+		fetch("https://api.sunrise-sunset.org/json?lat=56.3397754&lng=-2.7967214")
+			.then(response => response.json())
+			.then(data => {
+				const sunriseTime = new Date(data.results.sunrise);
+				const now = new Date();
+
+				// Calculate the difference in minutes between the current time and sunrise time
+				const timeDiff = Math.floor((now - sunriseTime) / 60000);
+
+				// Format the time difference as hours and minutes
+				const hours = Math.floor(timeDiff / 60);
+				const minutes = timeDiff % 60;
+				const formattedTime = hours.toString().padStart(2, '0') + ":" + minutes.toString().padStart(2, '0');
+
+				// Display the formatted time on the webpage
+				document.getElementById("currentTime").textContent = formattedTime;
+
+				// Update the time every minute
+				setInterval(() => {
+					const now = new Date();
+
+					// Calculate the difference in minutes between the current time and sunrise time
+					const timeDiff = Math.floor((now - sunriseTime) / 60000);
+
+					// Format the time difference as hours and minutes
+					const hours = Math.floor(timeDiff / 60);
+					const minutes = timeDiff % 60;
+					const formattedTime = hours.toString().padStart(2, '0') + ":" + minutes.toString().padStart(2, '0');
+
+					// Display the formatted time on the webpage
+					document.getElementById("currentTime").textContent = formattedTime;
+				}, 60000); // Update every minute
+			})
+			.catch(error => console.error(error));
+	</script>
+</body>
+</html>
