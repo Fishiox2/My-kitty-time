@@ -1,48 +1,45 @@
 <!DOCTYPE html>
 <html>
-<head>
-	<title>Sunrise Time Clock for St. Andrews, Scotland</title>
-</head>
-<body>
-	<h1>Sunrise Time Clock for St. Andrews, Scotland</h1>
-	<p>The current time in St. Andrews is: <span id="currentTime"></span></p>
+  <style>
+.centerio {
+  text-align: center;
+  font-family: Sans-serif;
+  font-size: 25px;
+  margin: 30px;
+}
+</style>
+<div class="centerio">
+  <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script>
+      const apiUrl = "https://api.sunrise-sunset.org/json?lat=56.339775&lng=-2.788835&formatted=0";
 
-	<script>
-		// Fetch the sunrise time for St. Andrews, Scotland
-		fetch("https://api.sunrise-sunset.org/json?lat=56.3397754&lng=-2.7967214")
-			.then(response => response.json())
-			.then(data => {
-				const sunriseTime = new Date(data.results.sunrise);
-				const now = new Date();
+      function updateTimer() {
+        fetch(apiUrl)
+          .then(response => response.json())
+          .then(data => {
+            const sunrise = moment(data.results.sunrise);
+            const now = moment();
+            const duration = moment.duration(now.diff(sunrise));
+            const hours = duration.hours().toString().padStart(2, "0");
+            const minutes = duration.minutes().toString().padStart(2, "0");
+            const formattedTime = `${hours}:${minutes}`;
+            document.getElementById("timer").textContent = formattedTime;
+          })
+          .catch(error => {
+            console.error(error);
+            document.getElementById("timer").textContent = "00:00";
+          });
+      }
 
-				// Calculate the difference in minutes between the current time and sunrise time
-				const timeDiff = Math.floor((now - sunriseTime) / 60000);
-
-				// Format the time difference as hours and minutes
-				const hours = Math.floor(timeDiff / 60);
-				const minutes = timeDiff % 60;
-				const formattedTime = hours.toString().padStart(2, '0') + ":" + minutes.toString().padStart(2, '0');
-
-				// Display the formatted time on the webpage
-				document.getElementById("currentTime").textContent = formattedTime;
-
-				// Update the time every minute
-				setInterval(() => {
-					const now = new Date();
-
-					// Calculate the difference in minutes between the current time and sunrise time
-					const timeDiff = Math.floor((now - sunriseTime) / 60000);
-
-					// Format the time difference as hours and minutes
-					const hours = Math.floor(timeDiff / 60);
-					const minutes = timeDiff % 60;
-					const formattedTime = hours.toString().padStart(2, '0') + ":" + minutes.toString().padStart(2, '0');
-
-					// Display the formatted time on the webpage
-					document.getElementById("currentTime").textContent = formattedTime;
-				}, 60000); // Update every minute
-			})
-			.catch(error => console.error(error));
-	</script>
-</body>
+      window.onload = function() {
+        updateTimer();
+        setInterval(updateTimer, 1000);
+      };
+    </script>
+  </head>
+  <body>
+    <span>Time – </span> <span id="timer">00:00</span>
+  </body>
+  </div>
 </html>
